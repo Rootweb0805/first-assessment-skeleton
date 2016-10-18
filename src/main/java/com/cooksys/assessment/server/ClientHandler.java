@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.HashSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +18,7 @@ public class ClientHandler implements Runnable {
 	private Logger log = LoggerFactory.getLogger(ClientHandler.class);
 
 	private Socket socket;
-
+		
 	public ClientHandler(Socket socket) {
 		super();
 		this.socket = socket;
@@ -33,10 +34,13 @@ public class ClientHandler implements Runnable {
 			while (!socket.isClosed()) {
 				String raw = reader.readLine();
 				Message message = mapper.readValue(raw, Message.class);
+				Users obj = new Users();
+				
 
 				switch (message.getCommand()) {
 					case "connect":
 						log.info("user <{}> connected", message.getUsername());
+						Users.userlist.add(message.getUsername());
 						break;
 					case "disconnect":
 						log.info("user <{}> disconnected", message.getUsername());
@@ -48,6 +52,19 @@ public class ClientHandler implements Runnable {
 						writer.write(response);
 						writer.flush();
 						break;
+					case "@":
+						log.info("user <{}> direct message <{}>", message.getUsername(), message.getContents());
+						String direct = mapper.writeValueAsString(message);
+						writer.write(direct);
+						writer.flush();
+						break;
+					case "users":
+						log.info("user <{}> users request <{}>", message.getUsername(), message.getContents());
+						String userobj = mapper.writeValueAsString(obj);
+						writer.write(userobj);
+						writer.flush();
+						break;
+						
 				}
 			}
 
