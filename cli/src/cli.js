@@ -44,7 +44,7 @@ cli
     } else if (command === 'users') {
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
     } else if (command === '@') {
-      username.send(new Message({ username, command, contents }).toJSON() + '\n')
+      server.write(new Message({ username, command, contents }).toJSON() + '\n')
     } else {
       this.log(`Command <${command}> was not recognized`)
     }

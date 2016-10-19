@@ -4,6 +4,14 @@ import java.util.HashSet;
 
 public class Users {
 
-	HashSet<String> userlist = new HashSet<String>();
+	private HashSet<String> userlist = new HashSet<String>();
+
+	public HashSet<String> getUserlist() {
+		return userlist;
+	}
+
+	public void setUserlist(HashSet<String> userlist) {
+		this.userlist = userlist;
+	}
 
 }

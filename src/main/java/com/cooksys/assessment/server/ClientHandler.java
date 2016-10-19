@@ -40,7 +40,8 @@ public class ClientHandler implements Runnable {
 				switch (message.getCommand()) {
 					case "connect":
 						log.info("user <{}> connected", message.getUsername());
-						Users.userlist.add(message.getUsername());
+						obj.getUserlist().add(message.getUsername());
+						System.out.println(obj.getUserlist());
 						break;
 					case "disconnect":
 						log.info("user <{}> disconnected", message.getUsername());
