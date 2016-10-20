@@ -20,7 +20,7 @@ public class ClientHandler implements Runnable {
 
 	// private Users userObj() {
 	// Users users = new Users();
-	// //ConcurrentHashMap<String, Socket> userlist = new ConcurrentHashMap<>();
+	// ConcurrentHashMap<String, Socket> userlist = new ConcurrentHashMap<>();
 	// users.setUserlist(Users.getUserlist());
 	// return users;
 	//
@@ -41,9 +41,23 @@ public class ClientHandler implements Runnable {
 			PrintWriter writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
 
 			while (!socket.isClosed()) {
-				String userlist = Users.getUserlist().toString();
+				String userlist = "Currently connected users: \n" + Users.getUserlist().toString();
 				String raw = reader.readLine();
 				Message message = mapper.readValue(raw, Message.class);
+				Message usersMessage = new Message();
+				String username = message.getCommand().substring(1); // username
+
+				if (message.getCommand().substring(0, 1) == "@" && Users.getUserlist().containsKey(username)) {
+					log.info("user <{}> direct message <{}>", message.getUsername(), message.getContents());
+
+					// Don't think I need these 3
+					// usersMessage.setUsername(message.getUsername());
+					// usersMessage.setCommand(message.getCommand());
+					// usersMessage.setContents(message.getContents());
+					String direct = mapper.writeValueAsString(message);
+					writer.write(direct);
+					writer.flush();
+				}
 
 				switch (message.getCommand()) {
 				case "connect":
@@ -64,18 +78,11 @@ public class ClientHandler implements Runnable {
 					break;
 				case "users":
 					log.info("user <{}> users request <{}>", message.getUsername(), message.getContents());
-					Message usersMessage = new Message();
 					usersMessage.setUsername(message.getUsername());
-					usersMessage.setCommand("users");
+					usersMessage.setCommand(message.getCommand());
 					usersMessage.setContents(userlist);
 					String UL = mapper.writeValueAsString(usersMessage);
 					writer.write(UL);
-					writer.flush();
-					break;
-				case "@":
-					log.info("user <{}> direct message <{}>", message.getUsername(), message.getContents());
-					String direct = mapper.writeValueAsString(message);
-					writer.write(direct);
 					writer.flush();
 					break;
 

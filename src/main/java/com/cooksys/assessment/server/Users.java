@@ -14,7 +14,7 @@ public class Users {
 	public void setUserlist(ConcurrentHashMap<String, Socket> userlist) {
 		Users.userlist = userlist;
 	}
-
+//doesn't return strings of keys when called, michael mentioned something about converting to array??
 	public static synchronized Enumeration<String> getUsers() {
 		return userlist.keys();
 	}
