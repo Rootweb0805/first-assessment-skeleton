@@ -18,16 +18,6 @@ public class ClientHandler implements Runnable {
 
 	private Socket socket;
 
-	// private Users userObj() {
-	// Users users = new Users();
-	// ConcurrentHashMap<String, Socket> userlist = new ConcurrentHashMap<>();
-	// users.setUserlist(Users.getUserlist());
-	// return users;
-	//
-	// }
-	//
-	// Users users = userObj();
-
 	public ClientHandler(Socket socket) {
 		super();
 		this.socket = socket;
@@ -41,20 +31,16 @@ public class ClientHandler implements Runnable {
 			PrintWriter writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
 
 			while (!socket.isClosed()) {
-				String userlist = "Currently connected users: \n" + Users.getUserlist().toString();
+				String userlist = "Currently connected users: \n" + Users.getNames().toString();
 				String raw = reader.readLine();
 				Message message = mapper.readValue(raw, Message.class);
 				Message usersMessage = new Message();
 				String username = message.getCommand().substring(1); // username
-				Socket directSocket = Users.getUserlist().get(username); // usernameSocket
 
 				if (message.getCommand().substring(0, 1).equals("@") && Users.getUserlist().containsKey(username)) {
 					log.info("user <{}> direct message to: " + username + " <" + message.getContents() + ">",
 							message.getUsername());
-					PrintWriter uWriter = new PrintWriter(new OutputStreamWriter(directSocket.getOutputStream()));
-					String direct = mapper.writeValueAsString(message);
-					uWriter.write(direct);
-					uWriter.flush();
+					Users.sendMessage(username, message);
 				}
 
 				switch (message.getCommand()) {
@@ -82,6 +68,10 @@ public class ClientHandler implements Runnable {
 					String UL = mapper.writeValueAsString(usersMessage);
 					writer.write(UL);
 					writer.flush();
+					break;
+				case "broadcast":
+					log.info("user <{}> broadcasted", message.getUsername(), message.getContents());
+					Users.broadcast(message);
 					break;
 
 				}

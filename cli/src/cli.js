@@ -9,6 +9,7 @@ let username
 let server
 let address
 let port
+let previousCommand
 
 cli
   .delimiter(cli.chalk['yellow']('ftd~$'))
@@ -40,10 +41,19 @@ cli
     if (command === 'disconnect') {
       server.end(new Message({ username, command }).toJSON() + '\n')
     } else if (command === 'echo') {
+      previousCommand === command
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
     } else if (command === 'users') {
+      previousCommand === command
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
     } else if (command.substring(0, 1) === '@') {
+      previousCommand === command
+      server.write(new Message({ username, command, contents }).toJSON() + '\n')
+    } else if (command === 'broadcast') {
+      previousCommand === command
+      server.write(new Message({ username, command, contents }).toJSON() + '\n')
+    } else if (command === null) {
+      command === previousCommand
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
     } else {
       this.log(`Command <${command}> was not recognized`)
