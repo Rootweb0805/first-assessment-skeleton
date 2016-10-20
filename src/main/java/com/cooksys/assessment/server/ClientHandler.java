@@ -46,17 +46,15 @@ public class ClientHandler implements Runnable {
 				Message message = mapper.readValue(raw, Message.class);
 				Message usersMessage = new Message();
 				String username = message.getCommand().substring(1); // username
+				Socket directSocket = Users.getUserlist().get(username); // usernameSocket
 
-				if (message.getCommand().substring(0, 1) == "@" && Users.getUserlist().containsKey(username)) {
-					log.info("user <{}> direct message <{}>", message.getUsername(), message.getContents());
-
-					// Don't think I need these 3
-					// usersMessage.setUsername(message.getUsername());
-					// usersMessage.setCommand(message.getCommand());
-					// usersMessage.setContents(message.getContents());
+				if (message.getCommand().substring(0, 1).equals("@") && Users.getUserlist().containsKey(username)) {
+					log.info("user <{}> direct message to: " + username + " <" + message.getContents() + ">",
+							message.getUsername());
+					PrintWriter uWriter = new PrintWriter(new OutputStreamWriter(directSocket.getOutputStream()));
 					String direct = mapper.writeValueAsString(message);
-					writer.write(direct);
-					writer.flush();
+					uWriter.write(direct);
+					uWriter.flush();
 				}
 
 				switch (message.getCommand()) {

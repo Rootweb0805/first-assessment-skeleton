@@ -4,6 +4,8 @@ import java.net.Socket;
 import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.cooksys.assessment.model.Message;
+
 public class Users {
 	private static ConcurrentHashMap<String, Socket> userlist = new ConcurrentHashMap<>();
 
@@ -14,19 +16,13 @@ public class Users {
 	public void setUserlist(ConcurrentHashMap<String, Socket> userlist) {
 		Users.userlist = userlist;
 	}
-//doesn't return strings of keys when called, michael mentioned something about converting to array??
+//doesn't return strings of keys when called, Michael mentioned something about converting to array??
 	public static synchronized Enumeration<String> getUsers() {
 		return userlist.keys();
 	}
 	
+	public static synchronized void directMessage(String user, Message m) {
+		
+	}
+	
 }
-
-// private static HashSet<String> userlist = new HashSet<String>();
-//
-// public static synchronized HashSet<String> getUserlist() {
-// return userlist;
-// }
-//
-// public void setUserlist(HashSet<String> userlist) {
-// Users.userlist = userlist;
-// }
