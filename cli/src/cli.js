@@ -9,7 +9,7 @@ let username
 let server
 let address
 let port
-var previousCommand
+let previousCommand
 
 cli
   .delimiter(cli.chalk['yellow']('ftd~$'))
@@ -27,7 +27,19 @@ cli
     })
 
     server.on('data', (buffer) => {
-      this.log(Message.fromJSON(buffer).toString())
+      let message = Message.fromJSON(buffer)
+      let value = message.toString()
+      if (message.command === 'echo') {
+        cli.log(cli.chalk['cyan'](value))
+      } else if (message.command === 'users') {
+        cli.log(cli.chalk['red'](value))
+      } else if (message.command.substring(0, 1) === '@') {
+        cli.log(cli.chalk['magenta'](value))
+      } else if (message.command === 'broadcast') {
+        cli.log(cli.chalk['blue'](value))
+      } else {
+        this.log(value)
+      }
     })
 
     server.on('end', () => {

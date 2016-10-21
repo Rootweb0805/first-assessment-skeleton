@@ -40,6 +40,14 @@ public class Users {
 	public static void setNames(Set<String> names) {
 		Users.names = names;
 	}
+	
+	public static synchronized String getStackedNames() {
+		String stack = "";
+		for(String s : names){
+			stack = stack + s + "\n";
+		}
+		return stack;
+	}
 
 	// public synchronized Timestamp getTime() {
 	// return time;
