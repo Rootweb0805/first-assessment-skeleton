@@ -5,6 +5,7 @@ public class Message {
 	private String username;
 	private String command;
 	private String contents;
+	private String previousCommand;
 
 	public String getUsername() {
 		return username;
@@ -15,7 +16,10 @@ public class Message {
 	}
 
 	public String getCommand() {
-		return command;
+		if (command != null) {
+			return command;
+		}
+		else return previousCommand;
 	}
 
 	public void setCommand(String command) {

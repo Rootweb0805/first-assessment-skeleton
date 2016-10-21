@@ -10,6 +10,8 @@ let server
 let address
 let port
 let previousCommand
+// RIP newContents
+// let newContents
 
 cli
   .delimiter(cli.chalk['yellow']('ftd~$'))
@@ -47,28 +49,48 @@ cli
     })
   })
   .action(function (input, callback) {
-    const [ command, ...rest ] = words(input, /[^, ]+/g)
-    const contents = rest.join(' ')
+    let [ command, ...rest ] = words(input, /[^, ]+/g)
+    let contents = rest.join(' ')
 
     if (command === 'disconnect') {
       server.end(new Message({ username, command }).toJSON() + '\n')
     } else if (command === 'echo') {
-      previousCommand === command
+      previousCommand = command
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
     } else if (command === 'users') {
-      previousCommand === command
+      previousCommand = command
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
     } else if (command.substring(0, 1) === '@') {
-      previousCommand === command
+      previousCommand = command
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
     } else if (command === 'broadcast') {
-      previousCommand === command
+      previousCommand = command
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
-    } else if (previousCommand !== undefined) {
-      server.write(new Message({ username, previousCommand, contents }).toJSON() + '\n')
+    } else if (previousCommand === 'echo') {
+      contents = command + ' ' + contents
+      command = 'echo'
+      server.write(new Message({ username, command, contents }).toJSON() + '\n')
+    } else if (previousCommand === 'users') {
+      contents = command + ' ' + contents
+      command = 'users'
+      server.write(new Message({ username, command, contents }).toJSON() + '\n')
+    } else if (previousCommand.substring(0, 1) === '@') {
+      contents = command + ' ' + contents
+      command = previousCommand
+      server.write(new Message({ username, command, contents }).toJSON() + '\n')
+    } else if (previousCommand === 'broadcast') {
+      contents = command + ' ' + contents
+      command = 'broadcast'
+      server.write(new Message({ username, command, contents }).toJSON() + '\n')
     } else {
-      this.log(`Command <${command}> was not recognized`)
+      this.log(`Command is required`)
     }
+
+    // WHY DOES CAUSE NULL POINTER?!?!?!?!
+    // } else if (previousCommand !== undefined) {
+    //   newContents = command + ' ' + contents
+    //   cli.log(previousCommand + ' ' + newContents)
+    //   server.write(new Message({ username, previousCommand, newContents }).toJSON() + '\n')
 
     callback()
   })
