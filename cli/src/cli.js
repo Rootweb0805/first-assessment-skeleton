@@ -9,7 +9,7 @@ let username
 let server
 let address
 let port
-let previousCommand
+var previousCommand
 
 cli
   .delimiter(cli.chalk['yellow']('ftd~$'))
@@ -52,9 +52,8 @@ cli
     } else if (command === 'broadcast') {
       previousCommand === command
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
-    } else if (command === null) {
-      command === previousCommand
-      server.write(new Message({ username, command, contents }).toJSON() + '\n')
+    } else if (previousCommand !== undefined) {
+      server.write(new Message({ username, previousCommand, contents }).toJSON() + '\n')
     } else {
       this.log(`Command <${command}> was not recognized`)
     }

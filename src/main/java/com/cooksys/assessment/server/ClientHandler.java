@@ -31,7 +31,7 @@ public class ClientHandler implements Runnable {
 			PrintWriter writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
 
 			while (!socket.isClosed()) {
-				String userlist = "Currently connected users: \n" + Users.getNames().toString();
+				String userlist = System.currentTimeMillis() + ": " + "Currently connected users: \n" + Users.getNames().toString();
 				String raw = reader.readLine();
 				Message message = mapper.readValue(raw, Message.class);
 				Message usersMessage = new Message();
@@ -47,18 +47,20 @@ public class ClientHandler implements Runnable {
 				case "connect":
 					log.info("user <{}> connected", message.getUsername());
 					Users.getUserlist().put(message.getUsername(), socket);
+					Users.alert("connect", message);
 					break;
 				case "disconnect":
 					log.info("user <{}> disconnected", message.getUsername());
 					Users.getUserlist().remove(message.getUsername());
+					Users.alert("disconnect", message);
 					this.socket.close();
 					break;
 				case "echo":
 					log.info("user <{}> echoed message <{}>", message.getUsername(), message.getContents());
+					String formatted = (System.currentTimeMillis() + ": " + message.getUsername() + " (echo): " + message.getContents());
 					String response = mapper.writeValueAsString(message);
 					writer.write(response);
 					writer.flush();
-					System.out.println(response);
 					break;
 				case "users":
 					log.info("user <{}> users request <{}>", message.getUsername(), message.getContents());
