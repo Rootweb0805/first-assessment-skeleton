@@ -58,6 +58,7 @@ public class ClientHandler implements Runnable {
 				case "echo":
 					log.info("user <{}> echoed message <{}>", message.getUsername(), message.getContents());
 					String formatted = (System.currentTimeMillis() + ": " + message.getUsername() + " (echo): " + message.getContents());
+					message.setContents(formatted);
 					String response = mapper.writeValueAsString(message);
 					writer.write(response);
 					writer.flush();

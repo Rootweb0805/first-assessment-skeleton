@@ -54,6 +54,7 @@ public class Users {
 		PrintWriter writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
 		ObjectMapper mapper = new ObjectMapper();
 		String formatted = (System.currentTimeMillis() + ": " + message.getUsername() + " (whisper): " + message.getContents());
+		message.setContents(formatted);
 		String jMessage = mapper.writeValueAsString(message);
 		writer.write(jMessage);
 		writer.flush();
@@ -61,9 +62,15 @@ public class Users {
 
 	public static synchronized void broadcast(Message message) throws IOException {
 		String formatted = (System.currentTimeMillis() + ": " + message.getUsername() + " (all): " + message.getContents());
-		//message.setContents(formatted);
+		message.setContents(formatted);
 		for (String n : names) {
-			sendMessage(n, message);
+			Socket socket = userlist.get(n);
+			PrintWriter writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+			ObjectMapper mapper = new ObjectMapper();
+			message.setContents(formatted);
+			String jMessage = mapper.writeValueAsString(message);
+			writer.write(jMessage);
+			writer.flush();
 		}
 	}
 
